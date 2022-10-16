@@ -13,7 +13,7 @@ module.exports.createCard = (req, res, next) => {
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
-    .then((card) => res.send({ card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         throw new IncorrectDataError('Переданы некорректные данные при создании карточки');
@@ -29,7 +29,7 @@ module.exports.delCardById = (req, res, next) => {
     .then((card) => res.send({ card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');
+        throw new IncorrectDataError('Некорректно указан _id карточки');
       }
       next(err);
     })

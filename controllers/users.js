@@ -12,7 +12,7 @@ module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         throw new IncorrectDataError('Переданы некорректные данные при создании пользователя');
@@ -24,9 +24,13 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) throw new NotFoundError('Пользователь по указанному _id не найден');
-      res.send({ user });
+    .orFail(new NotFoundError('Пользователь по указанному _id не найден'))
+    .then((user) => res.send({ user }))
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        throw new IncorrectDataError('Некорректно указан _id профиля');
+      }
+      next(err);
     })
     .catch((err) => next(err));
 };
