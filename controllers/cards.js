@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-const { IncorrectDataError, NotFoundError } = require('../utils/errors');
+const { IncorrectDataError } = require('../utils/errors/IncorrectDataError');
+const { NotFoundError } = require('../utils/errors/NotFoundError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ cards }))
-    .catch((err) => next(err));
+    .then((cards) => res.send(cards))
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -16,24 +17,24 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new IncorrectDataError('Переданы некорректные данные при создании карточки');
+        next(new IncorrectDataError('Переданы некорректные данные при создании карточки'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch((err) => next(err));
+    });
 };
 
 module.exports.delCardById = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(new NotFoundError('Карточка с указанным _id не найдена'))
-    .then((card) => res.send({ card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new IncorrectDataError('Некорректно указан _id карточки');
+        next(new IncorrectDataError('Некорректно указан _id карточки'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch((err) => next(err));
+    });
 };
 
 module.exports.putCardLike = (req, res, next) => {
@@ -43,14 +44,14 @@ module.exports.putCardLike = (req, res, next) => {
     { new: true },
   )
     .orFail(new NotFoundError('Передан несуществующий _id карточки'))
-    .then((card) => res.send({ card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new IncorrectDataError('Переданы некорректные данные для постановки/снятии лайка');
+        next(new IncorrectDataError('Переданы некорректные данные для постановки/снятии лайка'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch((err) => next(err));
+    });
 };
 
 module.exports.delCardLike = (req, res, next) => {
@@ -60,12 +61,12 @@ module.exports.delCardLike = (req, res, next) => {
     { new: true },
   )
     .orFail(new NotFoundError('Передан несуществующий _id карточки'))
-    .then((card) => res.send({ card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new IncorrectDataError('Переданы некорректные данные для постановки/снятии лайка');
+        next(new IncorrectDataError('Переданы некорректные данные для постановки/снятии лайка'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch((err) => next(err));
+    });
 };

@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
-const { NotFoundError, IncorrectDataError } = require('../utils/errors');
+const { IncorrectDataError } = require('../utils/errors/IncorrectDataError');
+const { NotFoundError } = require('../utils/errors/NotFoundError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ users }))
-    .catch((err) => next(err));
+    .then((users) => res.send(users))
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -15,24 +16,24 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new IncorrectDataError('Переданы некорректные данные при создании пользователя');
+        next(new IncorrectDataError('Переданы некорректные данные при создании пользователя'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch((err) => next(err));
+    });
 };
 
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(new NotFoundError('Пользователь по указанному _id не найден'))
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new IncorrectDataError('Некорректно указан _id профиля');
+        next(new IncorrectDataError('Некорректно указан _id профиля'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch((err) => next(err));
+    });
 };
 
 module.exports.patchUsersMe = (req, res, next) => {
@@ -40,14 +41,14 @@ module.exports.patchUsersMe = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(new NotFoundError('Пользователь с указанным _id не найден'))
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new IncorrectDataError('Переданы некорректные данные при обновлении профиля');
+        next(new IncorrectDataError('Переданы некорректные данные при обновлении профиля'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch((err) => next(err));
+    });
 };
 
 module.exports.patchUsersMeAvatar = (req, res, next) => {
@@ -55,12 +56,12 @@ module.exports.patchUsersMeAvatar = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(new NotFoundError('Пользователь с указанным _id не найден'))
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new IncorrectDataError('Переданы некорректные данные при обновлении аватара');
+        next(new IncorrectDataError('Переданы некорректные данные при обновлении аватара'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch((err) => next(err));
+    });
 };

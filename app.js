@@ -1,9 +1,7 @@
-/* eslint-disable no-unused-vars */
-
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { NotFoundError } = require('./utils/errors');
+const { NotFoundError } = require('./utils/errors/NotFoundError');
 
 const { PORT = 3000, MONGO_DB_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 const app = express();
@@ -24,10 +22,12 @@ app.use('*', () => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(err.statusCode).send({ message: err.message });
-});
-app.use((err, req, res, next) => {
-  res.status(500).send({ message: 'На сервере произошла ошибка' });
+  if (!err.statusCode) {
+    res.status(500).send({ message: 'На сервере произошла ошибка' });
+  } else {
+    res.status(err.statusCode).send({ message: err.message });
+    next();
+  }
 });
 
 app.listen(PORT, () => {
