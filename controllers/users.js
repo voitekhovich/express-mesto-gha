@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const { IncorrectDataError } = require('../utils/errors/IncorrectDataError');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
@@ -10,13 +11,20 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
-  User.create({ name, about, avatar })
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new IncorrectDataError('Переданы некорректные данные при создании пользователя'));
+        // next(new IncorrectDataError(
+        // 'Переданы некорректные данные при создании пользователя'));
+        next(new IncorrectDataError(err.message));
       } else {
         next(err);
       }
