@@ -1,7 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const { NotFoundError } = require('./utils/errors/NotFoundError');
+const { createUser, login } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000, MONGO_DB_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 const app = express();
@@ -15,6 +18,12 @@ app.use((req, res, next) => {
   next();
 });
 
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(cookieParser());
+app.use(auth);
+
 app.use(require('./routes'));
 
 app.use('*', () => {
@@ -22,6 +31,7 @@ app.use('*', () => {
 });
 
 app.use((err, req, res, next) => {
+  console.log(err);
   if (!err.statusCode) {
     res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
   } else {
@@ -31,5 +41,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  // console.log(`App listening on port ${PORT}`);
+  console.log(`App listening on port ${PORT}`);
 });

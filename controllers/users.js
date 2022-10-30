@@ -1,8 +1,11 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { IncorrectDataError } = require('../utils/errors/IncorrectDataError');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
+
+require('dotenv').config();
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -22,8 +25,6 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        // next(new IncorrectDataError(
-        // 'Переданы некорректные данные при создании пользователя'));
         next(new IncorrectDataError(err.message));
       } else {
         next(err);
@@ -42,6 +43,13 @@ module.exports.getUserById = (req, res, next) => {
         next(err);
       }
     });
+};
+
+module.exports.getUsersMe = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(new NotFoundError('Пользователь с указанным _id не найден'))
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 module.exports.patchUsersMe = (req, res, next) => {
@@ -72,4 +80,24 @@ module.exports.patchUsersMeAvatar = (req, res, next) => {
         next(err);
       }
     });
+};
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRESIN },
+      );
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: true,
+        })
+        .end();
+    })
+    .catch(next);
 };
