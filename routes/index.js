@@ -1,11 +1,15 @@
 const router = require('express').Router();
 const cookieParser = require('cookie-parser');
+const { celebrate } = require('celebrate');
+
 const { createUser, login } = require('../controllers/users');
 const auth = require('../middlewares/auth');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
 
-router.post('/signin', login);
-router.post('/signup', createUser);
+const { loginSсhema } = require('../utils/joiSchemas');
+
+router.post('/signin', celebrate(loginSсhema), login);
+router.post('/signup', celebrate(loginSсhema), createUser);
 
 router.use(cookieParser());
 router.use(auth);

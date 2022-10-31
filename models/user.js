@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const { AuthorisationError } = require('../utils/errors/AuthorisationError');
+const { regex } = require('../utils/constans');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,6 +20,7 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: (value) => regex.test(value),
   },
   email: {
     type: String,

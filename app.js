@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
+
 const errs = require('./middlewares/errs');
 
 const { PORT = 3000, MONGO_DB_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
@@ -13,6 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(require('./routes'));
 
+app.use(errors());
 app.use(errs);
 
 app.listen(PORT, () => {
