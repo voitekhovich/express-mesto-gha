@@ -13,11 +13,6 @@ mongoose.connect(MONGO_DB_URL);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.user = { _id: '634429a141910cbce743bf95' };
-  next();
-});
-
 app.use(require('./routes'));
 
 app.use(errors());

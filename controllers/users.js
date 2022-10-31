@@ -6,7 +6,7 @@ const { IncorrectDataError } = require('../utils/errors/IncorrectDataError');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
 const { ConflictError } = require('../utils/errors/ConflictError');
 
-const { JWT_TEST_TOKEN } = require('../utils/constans');
+// const { JWT_TEST_TOKEN } = require('../utils/constans');
 
 require('dotenv').config();
 
@@ -91,37 +91,38 @@ module.exports.patchUsersMeAvatar = (req, res, next) => {
     });
 };
 
-// module.exports.login = (req, res, next) => {
-//   const { email, password } = req.body;
-//   return User.findUserByCredentials(email, password)
-//     .then((user) => {
-//       const token = jwt.sign(
-//         { _id: user._id },
-//         process.env.JWT_SECRET,
-//         { expiresIn: process.env.JWT_EXPIRESIN },
-//       );
-//       res
-//         .cookie('jwt', token, {
-//           maxAge: 3600000 * 24 * 7,
-//           httpOnly: true,
-//           sameSite: true,
-//         })
-//         .end();
-//     })
-//     .catch(next);
-// };
-
-//  Логин по токену их headers для git тестов.
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        JWT_TEST_TOKEN,
-        { expiresIn: '7d' },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRESIN },
       );
-      res.send({ token });
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: true,
+        })
+        .end();
     })
     .catch(next);
 };
+
+// Авторизация для теста кода в Git Action через токен в заголовке
+//
+// module.exports.login = (req, res, next) => {
+//   const { email, password } = req.body;
+//   return User.findUserByCredentials(email, password)
+//     .then((user) => {
+//       const token = jwt.sign(
+//         { _id: user._id },
+//         JWT_TEST_TOKEN,
+//         { expiresIn: '7d' },
+//       );
+//       res.send({ token });
+//     })
+//     .catch(next);
+// };
