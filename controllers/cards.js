@@ -35,17 +35,6 @@ module.exports.delCardById = (req, res, next) => {
         next(err);
       }
     });
-
-  // Card.findByIdAndRemove(req.params.cardId)
-  //   .orFail(new NotFoundError('Карточка с указанным _id не найдена'))
-  //   .then((card) => res.send(card))
-  //   .catch((err) => {
-  //     if (err instanceof mongoose.Error.CastError) {
-  //       next(new IncorrectDataError('Некорректно указан _id карточки'));
-  //     } else {
-  //       next(err);
-  //     }
-  //   });
 };
 
 module.exports.putCardLike = (req, res, next) => {
