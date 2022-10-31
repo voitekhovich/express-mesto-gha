@@ -95,8 +95,10 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRESIN },
+        '3ed67c96e8c9b6efb9ae5ca67dfc18d2c38d5a46545566a01270ad8792c7867d',
+        { expiresIn: '7d' },
+        // process.env.JWT_SECRET,
+        // { expiresIn: process.env.JWT_EXPIRESIN },
       );
       res
         .cookie('jwt', token, {
