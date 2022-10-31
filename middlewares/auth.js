@@ -6,7 +6,7 @@ require('dotenv').config();
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
   if (!token) {
-    next(new AuthorisationError('Необходима авторизация'));
+    return next(new AuthorisationError('Необходима авторизация'));
   }
 
   let payload;
@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
-    next(new AuthorisationError('Необходима авторизация'));
+    return next(new AuthorisationError('Необходима авторизация'));
   }
   req.user = payload;
   return next();

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { IncorrectDataError } = require('../utils/errors/IncorrectDataError');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
+const { ConflictError } = require('../utils/errors/ConflictError');
 
 require('dotenv').config();
 
@@ -25,10 +26,12 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new IncorrectDataError(err.message));
-      } else {
-        next(err);
+        return next(new IncorrectDataError('Переданы некорректные данные при создании пользователя'));
       }
+      if (err.code === 11000) {
+        return next(new ConflictError('Такой e-mail уже существует'));
+      }
+      return next(err);
     });
 };
 
