@@ -23,7 +23,11 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.send(user))
+    .then((user) => {
+      const userObj = user.toObject();
+      delete userObj.password;
+      res.send(userObj);
+    })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(new IncorrectDataError('Переданы некорректные данные при создании пользователя'));
