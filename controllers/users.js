@@ -121,7 +121,7 @@ module.exports.login = (req, res, next) => {
         JWT_TEST_TOKEN,
         { expiresIn: '7d' },
       );
-      res.send({ token });
+      res.send(token);
     })
     .catch(next);
 };
