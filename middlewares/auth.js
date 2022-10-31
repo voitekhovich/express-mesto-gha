@@ -24,11 +24,12 @@ require('dotenv').config();
 
 // Токен в headers для git тестов.
 module.exports = (req, res, next) => {
-  const token = req.headers.authorization.replace('Bearer ', '');
-  if (!token) {
+  const { authorization } = req.headers;
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     return next(new AuthorisationError('Необходима авторизация'));
   }
 
+  const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
