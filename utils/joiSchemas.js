@@ -18,6 +18,12 @@ module.exports.userSсhema = {
   }),
 };
 
+module.exports.userIdSсhema = {
+  params: Joi.object().keys({
+    userId: Joi.string().alphanum().length(24),
+  }),
+};
+
 module.exports.avatarSсhema = {
   body: Joi.object().keys({
     avatar: Joi.string().required().pattern(new RegExp(regex)),

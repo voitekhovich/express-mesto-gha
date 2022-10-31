@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const { AuthorisationError } = require('../utils/errors/AuthorisationError');
 
+const { JWT_TEST_TOKEN } = require('../utils/constans');
+
 require('dotenv').config();
 
 // module.exports = (req, res, next) => {
@@ -22,8 +24,6 @@ require('dotenv').config();
 
 // Токен в headers для git тестов.
 module.exports = (req, res, next) => {
-  const { JWT_TEST_TOKEN } = require('../utils/constans');
-
   const token = req.headers.authorization.replace('Bearer ', '');
   if (!token) {
     return next(new AuthorisationError('Необходима авторизация'));

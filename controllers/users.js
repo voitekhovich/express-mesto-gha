@@ -6,6 +6,8 @@ const { IncorrectDataError } = require('../utils/errors/IncorrectDataError');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
 const { ConflictError } = require('../utils/errors/ConflictError');
 
+const { JWT_TEST_TOKEN } = require('../utils/constans');
+
 require('dotenv').config();
 
 module.exports.getUsers = (req, res, next) => {
@@ -111,8 +113,6 @@ module.exports.patchUsersMeAvatar = (req, res, next) => {
 
 //  Логин по токену их headers для git тестов.
 module.exports.login = (req, res, next) => {
-  const { JWT_TEST_TOKEN } = require('../utils/constans');
-
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
