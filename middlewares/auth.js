@@ -24,7 +24,7 @@ require('dotenv').config();
 module.exports = (req, res, next) => {
   const { JWT_TEST_TOKEN } = require('../utils/constans');
 
-  const token = req.headers.authorization;
+  const token = req.headers.authorization.replace('Bearer ', '');
   if (!token) {
     return next(new AuthorisationError('Необходима авторизация'));
   }
@@ -34,7 +34,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, JWT_TEST_TOKEN);
   } catch (err) {
-    return next(new AuthorisationError('Некорректный токен'));
+    return next(new AuthorisationError(`Некорректный токен: ${token}`));
   }
   req.user = payload;
   return next();
