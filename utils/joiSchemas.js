@@ -1,4 +1,5 @@
 const { Joi } = require('celebrate');
+const { regex } = require('./constans');
 
 module.exports.loginSсhema = {
   body: Joi.object().keys({
@@ -16,19 +17,19 @@ module.exports.userSсhema = {
 
 module.exports.avatarSсhema = {
   body: Joi.object().keys({
-    avatar: Joi.string().required(),
+    avatar: Joi.string().required().pattern(new RegExp(regex)),
   }),
 };
 
 module.exports.cardSсhema = {
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required(),
+    link: Joi.string().required().pattern(new RegExp(regex)),
   }),
 };
 
 module.exports.cardIdSсhema = {
-  body: Joi.object().keys({
-    _id: Joi.string().required(),
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
   }),
 };

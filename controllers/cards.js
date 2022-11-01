@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
+const { ForbiddenError } = require('../utils/errors/ForbiddenError');
 const { IncorrectDataError } = require('../utils/errors/IncorrectDataError');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
 
@@ -26,7 +27,7 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.delCardById = (req, res, next) => {
   Card.deleteOne({ _id: req.params.cardId, owner: req.user._id })
-    .orFail(new NotFoundError('Карточка с указанным _id не найдена'))
+    .orFail(new ForbiddenError('Некорректно указан _id карточки или попытка удалить чужую карточку'))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
