@@ -26,9 +26,24 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.delCardById = (req, res, next) => {
-  Card.deleteOne({ _id: req.params.cardId, owner: req.user._id })
-    .orFail(new ForbiddenError('Некорректно указан _id карточки или попытка удалить чужую карточку'))
-    .then((card) => res.send(card))
+  Card.findById(req.params.cardId)
+    .orFail(new NotFoundError('Карточка с указанным _id не найдена'))
+    .then((card) => {
+      if (!card.owner.toString() === req.user._id) {
+        return next(new ForbiddenError('Попытка удалить чужую карточку'));
+      }
+
+      return Card.findByIdAndRemove(req.params.cardId)
+        .orFail(new NotFoundError('Карточка с указанным _id не найдена'))
+        .then((deletedCard) => res.send(deletedCard))
+        .catch((err) => {
+          if (err instanceof mongoose.Error.CastError) {
+            next(new IncorrectDataError('Некорректно указан _id карточки'));
+          } else {
+            next(err);
+          }
+        });
+    })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new IncorrectDataError('Некорректно указан _id карточки'));
