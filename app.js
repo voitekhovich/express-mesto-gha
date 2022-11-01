@@ -5,7 +5,7 @@ const { errors } = require('celebrate');
 
 const errs = require('./middlewares/errs');
 
-const { PORT = 3000, MONGO_DB_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
+const { PORT = 3000, MONGO_DB_URL = 'mongodb://localhost:27017/mestodb2' } = process.env;
 const app = express();
 
 mongoose.connect(MONGO_DB_URL);
