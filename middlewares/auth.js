@@ -23,23 +23,3 @@ module.exports = (req, res, next) => {
   req.user = payload;
   return next();
 };
-
-// Авторизация для теста кода в Git Action через токен в заголовке
-//
-// module.exports = (req, res, next) => {
-//   const { authorization } = req.headers;
-//   if (!authorization || !authorization.startsWith('Bearer ')) {
-//     return next(new AuthorisationError('Необходима авторизация'));
-//   }
-
-//   const token = authorization.replace('Bearer ', '');
-//   let payload;
-
-//   try {
-//     payload = jwt.verify(token, JWT_SECRET);
-//   } catch (err) {
-//     return next(new AuthorisationError(`Некорректный токен: ${token}`));
-//   }
-//   req.user = payload;
-//   return next();
-// };
