@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { AuthorisationError } = require('../utils/errors/AuthorisationError');
 
-// const { JWT_TEST_TOKEN } = require('../utils/constans');
+const { DEV_JWT_SECRET } = require('../utils/constans');
+
+const { JWT_SECRET = DEV_JWT_SECRET } = process.env;
 
 require('dotenv').config();
 
@@ -14,7 +16,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, process.env.JWT_SECRET);
+    payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
     return next(new AuthorisationError('Некорректный токен'));
   }
@@ -34,7 +36,7 @@ module.exports = (req, res, next) => {
 //   let payload;
 
 //   try {
-//     payload = jwt.verify(token, JWT_TEST_TOKEN);
+//     payload = jwt.verify(token, JWT_SECRET);
 //   } catch (err) {
 //     return next(new AuthorisationError(`Некорректный токен: ${token}`));
 //   }

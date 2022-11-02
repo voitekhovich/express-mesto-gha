@@ -5,8 +5,9 @@ const User = require('../models/user');
 const { IncorrectDataError } = require('../utils/errors/IncorrectDataError');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
 const { ConflictError } = require('../utils/errors/ConflictError');
+const { DEV_JWT_SECRET, DEV_JWT_EXPIRESIN } = require('../utils/constans');
 
-// const { JWT_TEST_TOKEN } = require('../utils/constans');
+const { JWT_SECRET = DEV_JWT_SECRET, JWT_EXPIRESIN = DEV_JWT_EXPIRESIN } = process.env;
 
 require('dotenv').config();
 
@@ -97,8 +98,8 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRESIN },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRESIN },
       );
       res
         .cookie('jwt', token, {
@@ -106,7 +107,7 @@ module.exports.login = (req, res, next) => {
           httpOnly: true,
           sameSite: true,
         })
-        .end();
+        .send({ message: 'Пользователь авторизован' });
     })
     .catch(next);
 };
@@ -119,8 +120,8 @@ module.exports.login = (req, res, next) => {
 //     .then((user) => {
 //       const token = jwt.sign(
 //         { _id: user._id },
-//         JWT_TEST_TOKEN,
-//         { expiresIn: '7d' },
+//         JWT_SECRET,
+//         { expiresIn: JWT_EXPIRESIN },
 //       );
 //       res.send({ token });
 //     })

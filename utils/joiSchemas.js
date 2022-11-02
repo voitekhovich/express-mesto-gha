@@ -4,7 +4,7 @@ const { regex } = require('./constans');
 module.exports.loginSсhema = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(new RegExp(regex)),
@@ -20,7 +20,7 @@ module.exports.userSсhema = {
 
 module.exports.userIdSсhema = {
   params: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
+    userId: Joi.string().length(24).hex().required(),
   }),
 };
 
@@ -39,6 +39,6 @@ module.exports.cardSсhema = {
 
 module.exports.cardIdSсhema = {
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
+    cardId: Joi.string().length(24).hex().required(),
   }),
 };

@@ -17,6 +17,10 @@ router.use(auth);
 router.use('/users', require('./users'));
 router.use('/cards', require('./cards'));
 
+router.get('/signout', (req, res) => {
+  res.clearCookie('jwt').send({ message: 'Выход' });
+});
+
 router.use('*', () => {
   throw new NotFoundError('Был запрошен несуществующий роут');
 });
